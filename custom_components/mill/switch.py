@@ -10,8 +10,8 @@ from .entity import MillEntity
 ENTITY_DESCRIPTIONS = (
     SwitchEntityDescription(
         key="dgoCycle",
-        name="Cycle",
-        icon="mdi:dots-horizontal-circle",
+        name="Dry and Grind",
+        device_class=SwitchDeviceClass.SWITCH,
     ),
 )
 
