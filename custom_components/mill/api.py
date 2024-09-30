@@ -118,8 +118,8 @@ class MillApiClient:
                 "Invalid credentials",
             )
         if response.status != 200:
+            LOGGER.error(response)
             raise MillApiClientError(
-                LOGGER.error(response)
                 f"Unexpectred failure: [{response.status}] {response.reason}",
             )
         await response.json()
