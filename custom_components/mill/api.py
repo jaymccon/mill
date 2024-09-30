@@ -104,6 +104,26 @@ class MillApiClient:
             LOGGER.debug(data)
         return data
 
+    async def async_set_cycle(self, device, cycle_state):
+        """Set the cycle."""
+        data = {}
+        async with async_timeout.timeout(10):
+            response = await self._session.request(
+                method="post", 
+                url=f"{CLOUD_URL}/device_settings/{device}",
+                json={"settings":{"dgoCycle": cycle_state}}
+            )
+        if response.status in (401, 403):
+            raise MillApiClientAuthenticationError(
+                "Invalid credentials",
+            )
+        if response.status != 200:
+            raise MillApiClientError(
+                LOGGER.error(response)
+                f"Unexpectred failure: [{response.status}] {response.reason}",
+            )
+        await response.json()
+
 
     async def _api_wrapper(
         self,
