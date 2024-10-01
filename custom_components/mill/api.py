@@ -111,7 +111,7 @@ class MillApiClient:
                 method="post", 
                 url=f"{CLOUD_URL}/device_settings/{device}",
                 json={"settings":{"dgoCycle": cycle_state}},
-                headers={"Authorization": "Bearer " + self.token}
+                headers={'Authorization': self.token}
             )
         if response.status in (401, 403):
             raise MillApiClientAuthenticationError(
