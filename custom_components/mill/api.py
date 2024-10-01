@@ -53,22 +53,8 @@ class MillApiClient:
         if self.devices:
             LOGGER.debug("Exiting device load")
             return
-        creds = {
-            "email":    self._username,
-            "password": self._password
-        }
-        async with async_timeout.timeout(10):
-            response = await self._session.request(
-                method="post", 
-                url=f"{AUTH_URL}/tokens",
-                json=creds
-            )
-        if response.status in (401, 403):
-            raise MillApiClientAuthenticationError(
-                "Invalid credentials",
-            )
-        results=await response.json()
-        auth = {"Authorization": "Bearer " + results.get('token')}
+        await self.async_update_token()
+        auth = {"Authorization": "Bearer " + self.token}
         results = await self._api_wrapper(
             method="get", 
             url=f"{CLOUD_URL}/session_init?refresh_token=true",
@@ -104,8 +90,7 @@ class MillApiClient:
             LOGGER.debug(data)
         return data
 
-    async def async_set_cycle(self, device, cycle_state):
-        """Set the cycle."""
+    async def async_update_token(self):
         creds = {
             "email":    self._username,
             "password": self._password
@@ -121,7 +106,12 @@ class MillApiClient:
                 "Invalid credentials",
             )
         results=await response.json()
-        auth = {"Authorization": "Bearer " + results.get('token')}
+        self.token = results.get('token')
+
+    async def async_set_cycle(self, device, cycle_state):
+        """Set the cycle."""
+        await self.async_update_token()
+        auth = {"Authorization": "Bearer " + self.token}
         async with async_timeout.timeout(10):
             response = await self._session.request(
                 method="post", 
