@@ -46,14 +46,15 @@ class MillSwitch(MillEntity, SwitchEntity):
         self.entity_description = entity_description
         self.device = device
 
-
     async def async_turn_off(self, **kwargs):
         """Turn the mill off."""
         if not self.is_on:
             return
         client = self.coordinator.client
         await client.async_set_cycle(self.device, "Idle")
+        LOGGER.debug(f"before: {self.coordinator.data[self.device][self.entity_description.key]['reported']}")
         self.coordinator.data[self.device][self.entity_description.key]['reported'] = 'Idle'
+        LOGGER.debug(f"after: {self.coordinator.data[self.device][self.entity_description.key]['reported']}")
 
     async def async_turn_on(self, **kwargs):
         """Turn the mill on."""
@@ -61,15 +62,20 @@ class MillSwitch(MillEntity, SwitchEntity):
             return
         client = self.coordinator.client
         await client.async_set_cycle(self.device, "DryGrind")
+        LOGGER.debug(f"before: {self.coordinator.data[self.device][self.entity_description.key]['reported']}")
         self.coordinator.data[self.device][self.entity_description.key]['reported'] = 'DryGrind'
+        LOGGER.debug(f"after: {self.coordinator.data[self.device][self.entity_description.key]['reported']}")
+
 
     @property
     def is_on(self) -> bool:
         """Return true if the mill is on."""
+        LOGGER.debug("checking is_on status...")
         desc = self.entity_description
         value = self.coordinator.data[self.device].get(desc.key)
         if isinstance(value, dict):
             value = value.get('reported')
+            LOGGER.debug(f"reported cycle: {value}")
         if value == 'Idle':
             return False
         return True  
