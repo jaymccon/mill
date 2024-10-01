@@ -52,14 +52,14 @@ class MillSwitch(MillEntity, SwitchEntity):
         if not self.is_on:
             return
         client = self.coordinator.client
-        client.async_set_cycle(self.device, "Idle")
+        await client.async_set_cycle(self.device, "Idle")
 
     async def async_turn_on(self, **kwargs):
         """Turn the mill on."""
         if self.is_on:
             return
         client = self.coordinator.client
-        client.async_set_cycle(self.device, "DryGrind")
+        await client.async_set_cycle(self.device, "DryGrind")
 
     @property
     def is_on(self) -> bool:
