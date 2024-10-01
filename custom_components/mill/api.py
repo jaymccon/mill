@@ -87,6 +87,7 @@ class MillApiClient:
                     "Error fetching information",
                 ) from Exception
             data[device] = json.loads(results)
+            data[device]['is_on'] = data[device]['dgoCycle']['reported'] == 'DryGrind'
             LOGGER.debug(data)
         return data
 

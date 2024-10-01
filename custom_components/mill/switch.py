@@ -48,19 +48,19 @@ class MillSwitch(MillEntity, SwitchEntity):
 
     async def async_turn_off(self, **kwargs):
         """Turn the mill off."""
-        self.coordinator.data[self.device][self.entity_description.key]['reported'] = 'Idle'
+        self.coordinator.data[self.device]['is_on'] = False
         await self.coordinator.client.async_set_cycle(self.device, "Idle")        
 
     async def async_turn_on(self, **kwargs):
         """Turn the mill on."""
-        self.coordinator.data[self.device][self.entity_description.key]['reported'] = 'DryGrind'
+        self.coordinator.data[self.device]['is_on'] = True
         await self.coordinator.client.async_set_cycle(self.device, "DryGrind")
 
     @property
     def is_on(self) -> bool:
         """Return true if the mill is on."""
         try: 
-            return self.coordinator.data[self.device][self.entity_description.key]['reported'] == 'DryGrind'
+            return self.coordinator.data[self.device]['is_on']
         except Exception as e:
             LOGGER.error(e)
             return False
