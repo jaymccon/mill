@@ -59,12 +59,8 @@ class MillSwitch(MillEntity, SwitchEntity):
     @property
     def is_on(self) -> bool:
         """Return true if the mill is on."""
-        LOGGER.debug("checking is_on status...")
-        desc = self.entity_description
-        value = self.coordinator.data[self.device].get(desc.key)
-        if isinstance(value, dict):
-            value = value.get('reported')
-            LOGGER.debug(f"reported cycle: {value}")
-        if value == 'Idle':
+        try: 
+            return self.coordinator.data[self.device][self.entity_description.key]['reported'] == 'DryGrind'
+        except Exception as e:
+            LOGGER.error(e)
             return False
-        return True  
